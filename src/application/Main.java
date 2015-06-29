@@ -35,29 +35,10 @@ public class Main extends Application {
 			conf.heightProperty().bind(primaryStage.heightProperty());
 			conf.widthProperty().bind(primaryStage.widthProperty());
 			
-			
-//			DBUtils.remove();
-//			Document doc = new Document();
-//			doc.append("content", "hola loco mía");
-//			DBUtils.getCollection().insertOne(doc);
-//			doc = new Document("content", "hola, cómo andás papá ¿Todo bien? hola gil");
-//			DBUtils.getCollection().insertOne(doc);
-//			doc = new Document("content", "hola, yo no sé cómo hola este hola. La verdad es que el hola de las holas es muy grande. Hola");
-//			DBUtils.getCollection().insertOne(doc);
-
-//			MongoCursor<Document> cursor = DBUtils.getCollection().find(Filters.text("hola")).projection(Projections.metaTextScore("hola")).iterator();
-//			while(cursor.hasNext()){
-//				doc = cursor.next();
-//				System.out.println(doc.toJson());
-//				System.out.println(doc.get("_id"));
-//			}
-			
-			
+			System.out.println("DBServices.getLastOrder():  " +DBServices.getLastOrder());
 			
 			AnotadorController anotador = new AnotadorController();
-			anotador.setStyle("-fx-background-color: green;");
-			
-			
+			anotador.setStyle("-fx-background-color: green;");			
 			
 			Scene scene = new Scene(anotador, conf.getWidth(), conf.getHeight());
 //			Scene scene = new Scene(new TextPanePlusController(), conf.getWidth(), conf.getHeight());
@@ -72,18 +53,7 @@ public class Main extends Application {
 					primaryStage.setHeight(primaryStage.getHeight()+amount);
 				}else if(Key.HEIGTH_DOWN.match(event)){
 					primaryStage.setHeight(primaryStage.getHeight()-amount);
-				}else if(Key.DECORATE.match(event)){
-//					if(primaryStage.getStyle().equals(StageStyle.UNDECORATED)){
-//						primaryStage.hide();
-//						primaryStage.initStyle(StageStyle.DECORATED);
-//						primaryStage.show();
-//					
-//						
-//					}else{
-//						primaryStage.hide();
-//						primaryStage.initStyle(StageStyle.UNDECORATED);
-//						primaryStage.show();
-//					}					
+				}else if(Key.DECORATE.match(event)){				
 				}else if(Key.MOVE_UP.match(event)){					
 					primaryStage.setY(primaryStage.getY()-amount);
 				}else if(Key.MOVE_DOWN.match(event)){

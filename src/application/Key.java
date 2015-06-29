@@ -24,6 +24,10 @@ public enum Key{
 	CTRL_SPACE 	(KeyCode.SPACE, KeyCombination.CONTROL_DOWN),
 	CTRL_BRACELEFT 	(KeyCode.BRACELEFT, KeyCombination.CONTROL_DOWN),
 
+	ALT_LEFT		(KeyCode.LEFT, KeyCombination.ALT_DOWN),
+	ALT_RIGHT		(KeyCode.RIGHT, KeyCombination.ALT_DOWN),
+	
+	
 	MOVE_UP		(KeyCode.I, KeyCombination.CONTROL_DOWN),
 	MOVE_DOWN	(KeyCode.K, KeyCombination.CONTROL_DOWN),
 	MOVE_LEFT	(KeyCode.J, KeyCombination.CONTROL_DOWN),
