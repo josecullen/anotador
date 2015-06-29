@@ -1,7 +1,9 @@
 package application;
 	
 import view.TextAreaPlus;
+import view.TextAreaPlusDocument;
 import javafx.application.Application;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -42,7 +44,9 @@ public class Main extends Application {
 			
 			Scene scene = new Scene(anotador, conf.getWidth(), conf.getHeight());
 //			Scene scene = new Scene(new TextPanePlusController(), conf.getWidth(), conf.getHeight());
-//			Scene scene = new Scene(new TextAreaPlus(), conf.getWidth(), conf.getHeight());
+//			Scene scene = new Scene(new TextAreaPlusDocument(), conf.getWidth(), conf.getHeight());
+			
+			
 			scene.addEventHandler(KeyEvent.KEY_RELEASED, (EventHandler<KeyEvent>) (event)->{
 				int amount = 30;
 				if(Key.WIDTH_UP.match(event)){

@@ -40,6 +40,7 @@ import javafx.scene.web.WebView;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import view.TextAreaPlusDocument;
 import application.Conf;
 import application.DBServices;
 import application.DBUtils;
@@ -55,7 +56,7 @@ public class AnotadorController extends VBox {
 	
 	//	@FXML Button btnCancelar;
 //	, btnGuardar;
-	@FXML TextArea taContent;
+	@FXML TextAreaPlusDocument taContent;
 	@FXML TextField txtFind;	
 	ListView<LabelContent> txtList = new ListView<LabelContent>();
 	WebView web = new WebView();
@@ -72,7 +73,7 @@ public class AnotadorController extends VBox {
 		
 		fxmlLoader.load();
 		taContent.setFont(Font.font("Monospaced",FontWeight.BOLD,12));
-
+		
 		setListeners();
 		taContent.autosize();
 		VBox.setVgrow(txtList, Priority.ALWAYS);
@@ -91,35 +92,42 @@ public class AnotadorController extends VBox {
 		}else{
 			doc.set(DBServices.getNew());
 		}
+		taContent.doc.bindBidirectional(doc);
 		
 		Conf.getConf().lastDocProperty().bindBidirectional(doc);
 		txtList.setFocusTraversable(false);
 		txtFind.setFocusTraversable(false);
 		
 		EventHandler<KeyEvent> newSaveFindEdit = (EventHandler<KeyEvent>) (event)->{
-			if (Key.SAVE.match(event)) {
-				saveText();
-			}else if(Key.NEW.match(event)){
-				newText();
-			}else if(Key.FIND.match(event)){
+//			if (Key.SAVE.match(event)) {
+//				saveText();
+//			}else if(Key.NEW.match(event)){
+//				newText();
+//			}
+			
+			if(Key.FIND.match(event)){
 				txtFind.requestFocus();
 			}else if (Key.EDIT.match(event)) {
 				txtFind.setText("");
 				setEditor(true);
 				taContent.requestFocus();
-			}else if(Key.DEL.match(event)){
-				deleteText(doc.get());
-			}else if(Key.WEB.match(event)){
-				setWeb();
-			}else if(Key.ALT_LEFT.match(event)){
-				DBServices.saveLastChanges(doc.get());
-				doc.set(DBServices.getPrevious(doc.get()));
-				resetTaContent();
-			}else if(Key.ALT_RIGHT.match(event)){
-				DBServices.saveLastChanges(doc.get());
-				doc.set(DBServices.getNext(doc.get()));
-				resetTaContent();
 			}
+//			else if(Key.DEL.match(event)){
+//				taContent.delete();
+//				deleteText(doc.get());
+//			}
+//			Propios de TextArea
+//			else if(Key.WEB.match(event)){
+//				setWeb();
+//			}else if(Key.ALT_LEFT.match(event)){
+//				DBServices.saveLastChanges(doc.get());
+//				doc.set(DBServices.getPrevious(doc.get()));
+//				resetTaContent();
+//			}else if(Key.ALT_RIGHT.match(event)){
+//				DBServices.saveLastChanges(doc.get());
+//				doc.set(DBServices.getNext(doc.get()));
+//				resetTaContent();
+//			}
 		}; 
 		taContent.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);		
 		txtFind.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
@@ -215,8 +223,7 @@ public class AnotadorController extends VBox {
 		resetTaContent();		
 	}
 	
-	private void resetTaContent(){
-		
+	private void resetTaContent(){		
 		taContent.setText(getTextFromDoc(doc.get()));
 		txtFind.setText("");
 		setEditor(true);

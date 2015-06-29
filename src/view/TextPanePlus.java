@@ -1,5 +1,7 @@
 package view;
 
+import application.DBServices;
+import application.Key;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -13,6 +15,12 @@ public class TextPanePlus extends VBox {
 	public TextPanePlus() {
 		init();
 		setView();
+		
+		setOnKeyReleased(e->{
+			if(Key.WEB.match(e)){
+//				setWeb();
+			}
+		});
 	}
 	
 	private void init(){

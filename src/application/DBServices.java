@@ -33,9 +33,13 @@ public class DBServices {
 	}
 	
 	public static void saveLastChanges(Document doc){
-		DBUtils.getCollection()
-			.updateOne(
-				Filters.eq("_id", doc.get("_id")), new Document( "$set", new Document("lastChanges", doc.getString("lastChanges"))));
+		if(!exist(doc) && !doc.getString("lastChanges").isEmpty()){
+			passLastChangeAndSave(doc, false);
+		}else{
+			DBUtils.getCollection()
+				.updateOne(
+					Filters.eq("_id", doc.get("_id")), new Document( "$set", new Document("lastChanges", doc.getString("lastChanges"))));
+		}			
 	}
 	
 	public static Document getNew(){
@@ -53,6 +57,14 @@ public class DBServices {
 			return 0;
 		}
 		return order;
+	}
+	
+	public static void setInLastOrder(Document doc){
+		if(!isLastOrder(doc.getInteger("order"))){
+			DBUtils.getCollection()
+				.updateOne(
+					Filters.eq("_id", doc.get("_id")), new Document( "$set", new Document("order", getLastOrder()+1)));
+		}
 	}
 	
 	public static boolean isLastOrder(int order){
@@ -89,6 +101,13 @@ public class DBServices {
 		}		
 	}
 	
+	public static boolean exist(Document doc){
+		return DBUtils.getCollection().find(Filters.eq("_id", doc.get("_id"))).first() != null;
+	}
+	
+	public static void remove(Document doc){
+		DBUtils.getCollection().findOneAndDelete(new Document("_id", doc.get("_id")));
+	}
 	
 	
 }
