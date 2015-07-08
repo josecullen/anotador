@@ -14,28 +14,7 @@ import org.bson.Document;
 import com.mongodb.client.model.Filters;
 
 public class Conf {
-//	public static final KeyCombination keyCombSave = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombNew = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombFind = new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombEdit = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombTab = new KeyCodeCombination(KeyCode.TAB, KeyCombination.ALT_DOWN);
-//	public static final KeyCombination keyCombDel = new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombRenew = new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombWeb = new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombListItemHeight_UP = new KeyCodeCombination(KeyCode.PLUS, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
-//	public static final KeyCombination keyCombListItemHeight_DOWN = new KeyCodeCombination(KeyCode.BRACERIGHT, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
-//	public static final KeyCombination keyCombPlusW = new KeyCodeCombination(KeyCode.PLUS, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombBraceW = new KeyCodeCombination(KeyCode.BRACERIGHT, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombPlusH = new KeyCodeCombination(KeyCode.PLUS, KeyCombination.ALT_DOWN);
-//	public static final KeyCombination keyCombBraceH = new KeyCodeCombination(KeyCode.BRACERIGHT, KeyCombination.ALT_DOWN);
-//	public static final KeyCombination keyCombDecorate = new KeyCodeCombination(KeyCode.D, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN);
-//	
-//	public static final KeyCombination keyCombMoveUp = new KeyCodeCombination(KeyCode.I, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombMoveDown = new KeyCodeCombination(KeyCode.K, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombMoveLeft = new KeyCodeCombination(KeyCode.J, KeyCombination.CONTROL_DOWN);
-//	public static final KeyCombination keyCombMoveRight = new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN);
-	
-	
+
 	
 	private static Conf conf = new Conf();
 	private DoubleProperty 
@@ -137,6 +116,8 @@ public class Conf {
 	public final void setLastDoc(final org.bson.Document lastDoc) {
 		this.lastDocProperty().set(lastDoc);
 		confDoc.append("lastDoc", lastDoc);
+		DBUtils.getCollection().updateOne(
+				Filters.eq("_id", "conf"), new Document( "$set", new Document("lastDoc", lastDoc )));
 	}
 	
 	

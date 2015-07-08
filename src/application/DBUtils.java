@@ -20,6 +20,9 @@ public class DBUtils {
 	public static MongoCollection<Document> getCollection(){
 		return getDB().getCollection("notas");
 	}
+	public static MongoCollection<Document> getTagCollection(){
+		return getDB().getCollection("tags");
+	}
 	
 	public static void dropDatabase(){
 		getMongo().dropDatabase("anotador");

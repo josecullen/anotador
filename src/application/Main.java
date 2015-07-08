@@ -1,7 +1,10 @@
 package application;
 	
+import com.mongodb.Tag;
+
 import view.TextAreaPlus;
 import view.TextAreaPlusDocument;
+import view.contextmenu.HTMLContext;
 import javafx.application.Application;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
@@ -28,23 +31,24 @@ public class Main extends Application {
 		try {
 			this.primaryStage = primaryStage;
 			conf = Conf.getConf();
-//			DBUtils.dropDatabase();
 			primaryStage.initStyle(StageStyle.UNDECORATED);
-//			primaryStage.initStyle(StageStyle.UTILITY);
 			primaryStage.setWidth(conf.getWidth());
 			primaryStage.setHeight(conf.getHeight());
 			primaryStage.setResizable(true);
 			conf.heightProperty().bind(primaryStage.heightProperty());
 			conf.widthProperty().bind(primaryStage.widthProperty());
+						
 			
-			System.out.println("DBServices.getLastOrder():  " +DBServices.getLastOrder());
-			
+			System.out.println("DBServices.getLastOrder():  " +NotaServices.getLastOrder());
+//			TagServices.getAllTags().forEach(action -> System.out.println(action));
+			TagServices.getAllProperties().forEach(action -> System.out.println(action));
 			AnotadorController anotador = new AnotadorController();
 			anotador.setStyle("-fx-background-color: green;");			
 			
 			Scene scene = new Scene(anotador, conf.getWidth(), conf.getHeight());
 //			Scene scene = new Scene(new TextPanePlusController(), conf.getWidth(), conf.getHeight());
 //			Scene scene = new Scene(new TextAreaPlusDocument(), conf.getWidth(), conf.getHeight());
+//			Scene scene = new Scene(, conf.getWidth(), conf.getHeight());
 			
 			
 			scene.addEventHandler(KeyEvent.KEY_RELEASED, (EventHandler<KeyEvent>) (event)->{
@@ -69,16 +73,18 @@ public class Main extends Application {
 				}
 			});
 			
-			
+				
 			
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			
 			primaryStage.setScene(scene);
-			
+//			primaryStage.setScene(w.getScene());
 //			maximize(primaryStage);
 			
+			HTMLContext w = new HTMLContext();
+
+//			primaryStage.show();
 			
-			primaryStage.show();
 			
 		} catch(Exception e) {
 			e.printStackTrace();

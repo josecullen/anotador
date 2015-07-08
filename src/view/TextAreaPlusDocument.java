@@ -3,15 +3,12 @@ package view;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.paint.Color;
 
 import org.bson.Document;
 
 import controller.ContentState;
-import application.DBServices;
-import application.DBUtils;
+import application.NotaServices;
 import application.Key;
 import application.Styles;
 
@@ -20,9 +17,14 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 
 	private ContentState contentState;
 	
-	public TextAreaPlusDocument(SimpleObjectProperty<Document> docBinded) {
-		this.doc.bindBidirectional(docBinded);
-		setBorder(Styles.getBorder(Color.RED));
+	
+	public TextAreaPlusDocument() {
+		super();
+		doc = new SimpleObjectProperty<Document>(NotaServices.getNew());
+		doc.get().append("content", "hola mundo");
+		setText(doc.get().getString("content"));
+		setContentState(ContentState.SAVED);
+		setListeners();
 	}
 	
 	public ContentState getContentState(){
@@ -52,17 +54,11 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 	}
 	
 	
-	public TextAreaPlusDocument() {
-		doc = new SimpleObjectProperty<Document>(DBServices.getNew());
-		doc.get().append("content", "hola mundo");
-		setText(doc.get().getString("content"));
-		setContentState(ContentState.SAVED);
-		setListeners();
-	}
+	
 	
 	public void load(Document doc){
 		saveLastChanges();
-		DBServices.setInLastOrder(doc);
+		NotaServices.setInLastOrder(doc);
 		this.doc.set(doc);
 		resetTextFromDoc();
 	}	
@@ -70,39 +66,40 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 	
 	
 	public void saveLastChanges(){
-		DBServices.saveLastChanges(this.doc.get());
+		NotaServices.saveLastChanges(this.doc.get());
 	}
 	
 	public void save(){
-		DBServices.passLastChangeAndSave(doc.get(), false);
+		NotaServices.passLastChangeAndSave(doc.get(), false);
 		setContentState(ContentState.SAVED);
 	}
 	
 	public void delete(){
-		DBServices.remove(doc.get());
+		NotaServices.remove(doc.get());
 		setContentState(ContentState.DELETED);		
 	}
 	
 	public void restore(){
-		DBServices.passLastChangeAndSave(doc.get(), false);
+		NotaServices.save(doc.get(), false);
 		setContentState(ContentState.RESTORED);
+		resetTextFromDoc();
 	}
 	
 	public void next(){
 		saveLastChanges();
-		doc.set(DBServices.getNext(doc.get()));
+		doc.set(NotaServices.getNext(doc.get()));
 		resetTextFromDoc();
 	}
 	
 	public void previous(){
 		saveLastChanges();
-		doc.set(DBServices.getPrevious(doc.get()));
+		doc.set(NotaServices.getPrevious(doc.get()));
 		resetTextFromDoc();
 	}
 	
 	public void newDoc(){
-		DBServices.saveLastChanges(doc.get());
-		doc.set(DBServices.getNew());
+		NotaServices.saveLastChanges(doc.get());
+		doc.set(NotaServices.getNew());
 		resetTextFromDoc();
 	}
 	
@@ -110,7 +107,7 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 	private void setListeners(){
 		setOnKeyReleased(e->{
 			doc.get().append("lastChanges", getText());
-
+			System.out.println(e.getCode());
 			if(Key.ALT_LEFT.match(e)){
 				previous();
 			}else if(Key.ALT_RIGHT.match(e)){
@@ -124,6 +121,7 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 			}else if(Key.RENEW.match(e)){
 				restore();
 			}
+
 		});
 
 		textProperty().addListener((InvalidationListener) listener ->{
@@ -151,7 +149,7 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 	}
 	
 	private boolean isUnsaved(){
-		return !doc.get().getString("lastChanges").isEmpty();
+		return !doc.get().getString("lastChanges").isEmpty() && doc.get().getString("lastChanges") != "";
 	}
 	
 	

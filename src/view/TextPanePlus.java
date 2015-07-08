@@ -1,6 +1,6 @@
 package view;
 
-import application.DBServices;
+import application.NotaServices;
 import application.Key;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;

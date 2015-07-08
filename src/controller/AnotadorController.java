@@ -2,6 +2,7 @@ package controller;
 
 import static com.mongodb.client.model.Filters.text;
 
+import java.awt.image.DataBufferShort;
 import java.io.IOException;
 
 import javax.jws.soap.SOAPBinding.Style;
@@ -42,7 +43,7 @@ import org.bson.conversions.Bson;
 
 import view.TextAreaPlusDocument;
 import application.Conf;
-import application.DBServices;
+import application.NotaServices;
 import application.DBUtils;
 import application.Key;
 import application.Main;
@@ -79,59 +80,57 @@ public class AnotadorController extends VBox {
 		VBox.setVgrow(txtList, Priority.ALWAYS);
 		txtList.autosize();
 		
-		
+		Main.primaryStage.setOnCloseRequest(value ->{
+			taContent.save();
+			Conf.getConf().setLastDoc(doc.get());
+		});
 	}
 	
 	
 	private void setListeners(){
-		Document lastDoc = Conf.getConf().getLastDoc();
+		Document lastDoc = Conf.getConf().getLastDoc();		
 		if(lastDoc != null){
 			doc.set(lastDoc);
 			taContent.setText(getTextFromDoc(doc.get()));
 			taContent.positionCaret(taContent.getText().length());
 		}else{
-			doc.set(DBServices.getNew());
+			doc.set(NotaServices.getNew());
 		}
 		taContent.doc.bindBidirectional(doc);
+		taContent.load(doc.get());
 		
 		Conf.getConf().lastDocProperty().bindBidirectional(doc);
 		txtList.setFocusTraversable(false);
 		txtFind.setFocusTraversable(false);
 		
 		EventHandler<KeyEvent> newSaveFindEdit = (EventHandler<KeyEvent>) (event)->{
-//			if (Key.SAVE.match(event)) {
-//				saveText();
-//			}else if(Key.NEW.match(event)){
-//				newText();
-//			}
-			
 			if(Key.FIND.match(event)){
 				txtFind.requestFocus();
 			}else if (Key.EDIT.match(event)) {
 				txtFind.setText("");
 				setEditor(true);
 				taContent.requestFocus();
+			}else if(Key.WEB.match(event)){
+				setWeb();
 			}
-//			else if(Key.DEL.match(event)){
-//				taContent.delete();
-//				deleteText(doc.get());
-//			}
-//			Propios de TextArea
-//			else if(Key.WEB.match(event)){
-//				setWeb();
-//			}else if(Key.ALT_LEFT.match(event)){
-//				DBServices.saveLastChanges(doc.get());
-//				doc.set(DBServices.getPrevious(doc.get()));
-//				resetTaContent();
-//			}else if(Key.ALT_RIGHT.match(event)){
-//				DBServices.saveLastChanges(doc.get());
-//				doc.set(DBServices.getNext(doc.get()));
-//				resetTaContent();
-//			}
+
 		}; 
 		taContent.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);		
 		txtFind.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
 		web.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
+		
+		txtList.addEventHandler(KeyEvent.KEY_RELEASED, event ->{
+			if(Key.ALL_LIST_UP.match(event)){
+				txtList.getItems().forEach(action ->{
+					action.setPrefRowCount(action.getPrefRowCount()+1);	
+				});
+								
+			}else if(Key.ALL_LIST_DOWN.match(event)){
+				txtList.getItems().forEach(action ->{
+					action.setPrefRowCount(action.getPrefRowCount()-1);	
+				});
+			}
+		});
 		
 		
 		txtFind.setOnKeyReleased(value ->{
@@ -141,7 +140,7 @@ public class AnotadorController extends VBox {
 			if(!words.equals("")){
 				txtList.getItems().remove(0, txtList.getItems().size());
 					
-				MongoCursor<Document> cursor = DBServices.textMatch(words);
+				MongoCursor<Document> cursor = NotaServices.textMatch(words);
 				cursor.forEachRemaining(action->{
 					if(!action.get("_id").equals("conf")){
 						System.out.println(action.toJson());
@@ -153,19 +152,7 @@ public class AnotadorController extends VBox {
 						setEditor(!(txtList.getItems().size() > 0 && txtFind.getText().length() > 1));	
 					}
 				});
-//				while(cursor.hasNext()){
-//					Document docc = cursor.next();
-//					if(!docc.get("_id").equals("conf")){
-//						System.out.println(docc.toJson());
-//						if(docc.get("content").toString().toLowerCase().contains(words.toLowerCase())){
-//							txtList.getItems().add(new LabelContent(docc));
-//						}else{
-//							taContent.setText("");
-//						}
-//						setEditor(!(txtList.getItems().size() > 0 && txtFind.getText().length() > 1));	
-//					}
-//										
-//				}	
+
 			}
 			
 		});
@@ -211,15 +198,15 @@ public class AnotadorController extends VBox {
 	private void saveText(){
 		doc.get().append("lastChanges", taContent.getText());
 		if(doc.get() != null){
-			DBServices.passLastChangeAndSave(doc.get(), false);
+			NotaServices.passLastChangeAndSave(doc.get(), false);
 		}else{
 			doc.set(new Document("content", taContent.getText()));
-			DBServices.passLastChangeAndSave(doc.get(), true);
+			NotaServices.passLastChangeAndSave(doc.get(), true);
 		}
 	}
 	
 	private void newText(){		
-		doc.set(DBServices.getNew());
+		doc.set(NotaServices.getNew());
 		resetTaContent();		
 	}
 	
@@ -331,7 +318,7 @@ public class AnotadorController extends VBox {
 			docLoad.append("content", getText());
 			doc.set(docLoad);
 			txtFind.setText("");
-			DBServices.save(doc.get(), true);
+			NotaServices.save(doc.get(), true);
 			doc.get().append("lastChanges", docLoad.getString("content"));
 			taContent.setText(doc.get().getString("lastChanges"));						
 			setEditor(true);
