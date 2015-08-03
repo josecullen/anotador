@@ -14,6 +14,8 @@ public enum Key{
 	DEL 		(KeyCode.DELETE, KeyCombination.CONTROL_DOWN),
 	RENEW		(KeyCode.R, KeyCombination.CONTROL_DOWN),
 	WEB			(KeyCode.W, KeyCombination.CONTROL_DOWN),
+	TRANSLATOR	(KeyCode.T, KeyCombination.CONTROL_DOWN),
+	TRANSLATOR_EXPRESS	(KeyCode.T, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN),
 	LIST_H_UP	(KeyCode.PLUS, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN),
 	LIST_H_DOWN	(KeyCode.BRACERIGHT, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN),
 	WIDTH_UP	(KeyCode.PLUS, KeyCombination.CONTROL_DOWN),
@@ -22,6 +24,7 @@ public enum Key{
 	HEIGTH_DOWN	(KeyCode.BRACERIGHT, KeyCombination.ALT_DOWN),
 	DECORATE	(KeyCode.D, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN),
 	CTRL_SPACE 	(KeyCode.SPACE, KeyCombination.CONTROL_DOWN),
+	CTRL_I	 	(KeyCode.I, KeyCombination.CONTROL_DOWN),
 	CTRL_BRACELEFT 	(KeyCode.BRACELEFT, KeyCombination.CONTROL_DOWN),
 
 	ALL_LIST_UP 	(KeyCode.PLUS, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN),
