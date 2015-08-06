@@ -33,7 +33,8 @@ public class DBUtils {
 	}
 	
 	public static Document getConfDoc(){
-		return getCollection().find(new Document("_id", "conf")).first();
+		Document conf = getCollection().find(new Document("_id", "conf")).first();
+		return conf;
 	}
 	
 	

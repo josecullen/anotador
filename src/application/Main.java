@@ -1,5 +1,8 @@
 package application;
 	
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 import com.mongodb.Tag;
 
 import view.TextAreaPlus;
@@ -37,11 +40,11 @@ public class Main extends Application {
 			primaryStage.setResizable(true);
 			conf.heightProperty().bind(primaryStage.heightProperty());
 			conf.widthProperty().bind(primaryStage.widthProperty());
-						
+			
 			
 			System.out.println("DBServices.getLastOrder():  " +NotaServices.getLastOrder());
 //			TagServices.getAllTags().forEach(action -> System.out.println(action));
-			TagServices.getAllProperties().forEach(action -> System.out.println(action));
+			//TagServices.getAllProperties().forEach(action -> System.out.println(action));
 			AnotadorController anotador = new AnotadorController();
 			anotador.setStyle("-fx-background-color: green;");			
 			
@@ -81,9 +84,9 @@ public class Main extends Application {
 //			primaryStage.setScene(w.getScene());
 //			maximize(primaryStage);
 			
-			HTMLContext w = new HTMLContext();
+		//	HTMLContext w = new HTMLContext();
 
-//			primaryStage.show();
+			primaryStage.show();
 			
 			
 		} catch(Exception e) {
@@ -106,5 +109,30 @@ public class Main extends Application {
 		stage.setWidth(bounds.getWidth());
 		stage.setHeight(bounds.getHeight());
 	}
+	
+	private String executeCommand(String command) {
+		 
+		StringBuffer output = new StringBuffer();
+ 
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(command);
+			p.waitFor();
+			BufferedReader reader = 
+                            new BufferedReader(new InputStreamReader(p.getInputStream()));
+ 
+                        String line = "";			
+			while ((line = reader.readLine())!= null) {
+				output.append(line + "\n");
+			}
+ 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+ 
+		return output.toString();
+ 
+	}
+
 	
 }

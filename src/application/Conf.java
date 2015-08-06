@@ -5,9 +5,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 
 import org.bson.Document;
 
@@ -40,7 +37,7 @@ public class Conf {
 				.append("_id", "conf")
 				.append("width", 400d)
 				.append("height", 400d)
-				.append("lastDoc", lastDoc);	
+				.append("lastDoc", lastDoc.get());	
 			DBUtils.getCollection().insertOne(confDoc);
 		}else{
 			System.out.println(confDoc.toJson());
