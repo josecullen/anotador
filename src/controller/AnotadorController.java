@@ -1,67 +1,40 @@
 package controller;
 
-import static com.mongodb.client.model.Filters.text;
-
-import java.awt.image.DataBufferShort;
 import java.io.IOException;
-
-import javax.jws.soap.SOAPBinding.Style;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import view.TextAreaPlusDocument;
 import application.Conf;
-import application.NotaServices;
 import application.DBUtils;
 import application.Key;
 import application.Main;
+import application.NotaServices;
 import application.Styles;
 
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
 public class AnotadorController extends VBox {
 	
-	//	@FXML Button btnCancelar;
-//	, btnGuardar;
 	@FXML TextAreaPlusDocument taContent;
 	@FXML TextField txtFind;	
 	ListView<LabelContent> txtList = new ListView<LabelContent>();
-	WebView web = new WebView();
-	WebEngine engine = web.getEngine();
+	WebPane webPane = new WebPane();
 	
 	public ObjectProperty<Document> doc = new SimpleObjectProperty<Document>();
 	
@@ -84,10 +57,19 @@ public class AnotadorController extends VBox {
 			taContent.save();
 			Conf.getConf().setLastDoc(doc.get());
 		});
+		
+//		Stage testWebStage = new Stage();
+//		testWebStage.setScene(new Scene(webPane, 1000, 500));
+//		testWebStage.show();
+		if(Conf.getConf().isTraductorVisible()){
+			showTranslator();
+		}
+	
 	}
 	
 	
 	private void setListeners(){
+
 		Document lastDoc = Conf.getConf().getLastDoc();		
 		if(lastDoc != null){
 			doc.set(lastDoc);
@@ -112,12 +94,24 @@ public class AnotadorController extends VBox {
 				taContent.requestFocus();
 			}else if(Key.WEB.match(event)){
 				setWeb();
+			}else if(Key.TRANSLATOR.match(event)){
+				setTransLator();
+			}else if(Key.TRANSLATOR_EXPRESS.match(event)){
+				showTranslator();
 			}
+			
 
 		}; 
 		taContent.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);		
+		taContent.addEventHandler(KeyEvent.KEY_PRESSED, e->{
+			if(Key.CTRL_SPACE.match(e)){
+				webPane.translate(taContent.getSelectedText());
+			}
+		});	
 		txtFind.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
-		web.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
+		
+//		web.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
+		webPane.addEventHandler(KeyEvent.KEY_RELEASED, newSaveFindEdit);
 		
 		txtList.addEventHandler(KeyEvent.KEY_RELEASED, event ->{
 			if(Key.ALL_LIST_UP.match(event)){
@@ -170,40 +164,60 @@ public class AnotadorController extends VBox {
 	}
 	
 	private void setWeb(){
-		if(getChildren().contains(web)){
-			getChildren().remove(1);
-			getChildren().add(taContent);
-		}else{
-			getChildren().remove(1);
-			getChildren().add(web);
-			engine.loadContent(taContent.getText());	
-		}
-		
+		switchWeb();
+		webPane.loadContent(taContent.getText());
 	}
+	
+	private void setTransLator(){
+		switchWeb();
+		String content = taContent.getSelectedText().isEmpty() ? taContent.getText() : taContent.getSelectedText(); 
+		webPane.translate(content);
+	}
+	
+	private void switchWeb(){
+		if(getChildren().contains(webPane)){
+			getChildren().remove(webPane);
+			getChildren().add(1, taContent);
+		}else{
+			getChildren().remove(taContent);
+			getChildren().add(1, webPane);			
+		}
+	}
+	
+	private void showTranslator(){
+		if(!getChildren().contains(webPane.getTransLatorLabel())){
+			getChildren().add(webPane.getTransLatorLabel());
+			Conf.getConf().setTraductorVisible(true);
+		}else{
+			getChildren().remove(webPane.getTransLatorLabel());
+			Conf.getConf().setTraductorVisible(false);
+		}
+	}
+	
 	
 	private void setEditor(boolean showEditor){
 		if(!showEditor){
 			if(getChildren().contains(taContent)){
 				getChildren().remove(taContent);
-				getChildren().add(txtList);	
+				getChildren().add(1, txtList);	
 			}			
 		}else{
 			if(getChildren().contains(txtList)){
 				getChildren().remove(txtList);
-				getChildren().add(taContent);
+				getChildren().add(1, taContent);
 			}
 		}
 	}
 	
-	private void saveText(){
-		doc.get().append("lastChanges", taContent.getText());
-		if(doc.get() != null){
-			NotaServices.passLastChangeAndSave(doc.get(), false);
-		}else{
-			doc.set(new Document("content", taContent.getText()));
-			NotaServices.passLastChangeAndSave(doc.get(), true);
-		}
-	}
+//	private void saveText(){
+//		doc.get().append("lastChanges", taContent.getText());
+//		if(doc.get() != null){
+//			NotaServices.passLastChangeAndSave(doc.get(), false);
+//		}else{
+//			doc.set(new Document("content", taContent.getText()));
+//			NotaServices.passLastChangeAndSave(doc.get(), true);
+//		}
+//	}
 	
 	private void newText(){		
 		doc.set(NotaServices.getNew());

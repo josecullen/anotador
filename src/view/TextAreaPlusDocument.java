@@ -107,7 +107,7 @@ public class TextAreaPlusDocument extends TextAreaPlus {
 	private void setListeners(){
 		setOnKeyReleased(e->{
 			doc.get().append("lastChanges", getText());
-			System.out.println(e.getCode());
+//			System.out.println(e.getCode());
 			if(Key.ALT_LEFT.match(e)){
 				previous();
 			}else if(Key.ALT_RIGHT.match(e)){

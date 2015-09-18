@@ -1,27 +1,14 @@
 package application;
 	
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-import com.mongodb.Tag;
-
-import view.TextAreaPlus;
-import view.TextAreaPlusDocument;
-import view.contextmenu.HTMLContext;
 import javafx.application.Application;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import controller.AnotadorController;
-import controller.TextPanePlusController;
 
 
 public class Main extends Application {
@@ -32,6 +19,10 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			Runtime runtime = Runtime.getRuntime();
+			runtime.exec("mongod");
+			
+			
 			this.primaryStage = primaryStage;
 			conf = Conf.getConf();
 			primaryStage.initStyle(StageStyle.UNDECORATED);
@@ -43,17 +34,12 @@ public class Main extends Application {
 			
 			
 			System.out.println("DBServices.getLastOrder():  " +NotaServices.getLastOrder());
-//			TagServices.getAllTags().forEach(action -> System.out.println(action));
 			//TagServices.getAllProperties().forEach(action -> System.out.println(action));
 			AnotadorController anotador = new AnotadorController();
-			anotador.setStyle("-fx-background-color: green;");			
+			
 			
 			Scene scene = new Scene(anotador, conf.getWidth(), conf.getHeight());
-//			Scene scene = new Scene(new TextPanePlusController(), conf.getWidth(), conf.getHeight());
-//			Scene scene = new Scene(new TextAreaPlusDocument(), conf.getWidth(), conf.getHeight());
-//			Scene scene = new Scene(, conf.getWidth(), conf.getHeight());
-			
-			
+
 			scene.addEventHandler(KeyEvent.KEY_RELEASED, (EventHandler<KeyEvent>) (event)->{
 				int amount = 30;
 				if(Key.WIDTH_UP.match(event)){
@@ -84,7 +70,7 @@ public class Main extends Application {
 //			primaryStage.setScene(w.getScene());
 //			maximize(primaryStage);
 			
-		//	HTMLContext w = new HTMLContext();
+//			HTMLContext w = new HTMLContext();
 
 			primaryStage.show();
 			
@@ -110,29 +96,6 @@ public class Main extends Application {
 		stage.setHeight(bounds.getHeight());
 	}
 	
-	private String executeCommand(String command) {
-		 
-		StringBuffer output = new StringBuffer();
- 
-		Process p;
-		try {
-			p = Runtime.getRuntime().exec(command);
-			p.waitFor();
-			BufferedReader reader = 
-                            new BufferedReader(new InputStreamReader(p.getInputStream()));
- 
-                        String line = "";			
-			while ((line = reader.readLine())!= null) {
-				output.append(line + "\n");
-			}
- 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
- 
-		return output.toString();
- 
-	}
-
+	
 	
 }
